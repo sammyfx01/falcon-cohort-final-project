@@ -8,7 +8,7 @@
     <ul>
       {% for restaurant in restaurants %}
         <li>
-          <strong>{{ restaurant.name }}</strong> — {{ restaurant.address }}
+          <strong><a href="{% url 'restaurant_detail' restaurant.pk %}">{{ restaurant.name }}</a></strong> — {{ restaurant.address }}
           <br>
           Open: {{ restaurant.opening_time }} – {{ restaurant.closing_time }}
         </li>
