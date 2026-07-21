@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Restaurants{% endblock %}
+
+{% block content %}
+  <h1>Restaurants</h1>
+
+  {% if restaurants %}
+    <ul>
+      {% for restaurant in restaurants %}
+        <li>
+          <strong>{{ restaurant.name }}</strong> — {{ restaurant.address }}
+          <br>
+          Open: {{ restaurant.opening_time }} – {{ restaurant.closing_time }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No restaurants yet.</p>
+  {% endif %}
+{% endblock %}
