@@ -1,20 +1,30 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Restaurant, MenuItem
+from django.http import HttpResponseForbidden
+from django.utils import timezone
+from .models import Restaurant, MenuItem, ContactMessage
+from .forms import MenuItemForm, ContactForm
 
 
 def restaurant_list(request):
     restaurants = Restaurant.objects.all()
-    return render(request, 'restaurants/restaurant_list.html', {'restaurants': restaurants})
+    featured_items = MenuItem.objects.filter(is_available=True).order_by('-id')[:6]
+    return render(request, 'restaurants/restaurant_list.html', {
+        'restaurants': restaurants,
+        'featured_items': featured_items,
+    })
 
 
 def restaurant_detail(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     menu_items = restaurant.menu_items.all()
+    is_owner = request.user.is_authenticated and restaurant.owner == request.user
     return render(request, 'restaurants/restaurant_detail.html', {
         'restaurant': restaurant,
         'menu_items': menu_items,
+        'is_owner': is_owner,
     })
 
 
@@ -28,3 +38,112 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+@login_required
+def menu_item_create(request, restaurant_pk):
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_pk)
+    if restaurant.owner != request.user:
+        return HttpResponseForbidden("You don't own this restaurant.")
+    if request.method == 'POST':
+        form = MenuItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.restaurant = restaurant
+            item.save()
+            messages.success(request, f'"{item.name}" was added to the menu.')
+            return redirect('restaurant_detail', pk=restaurant.pk)
+    else:
+        form = MenuItemForm()
+    return render(request, 'restaurants/menu_item_form.html', {'form': form, 'action': 'Add', 'restaurant': restaurant})
+
+
+@login_required
+def menu_item_update(request, pk):
+    item = get_object_or_404(MenuItem, pk=pk)
+    if item.restaurant.owner != request.user:
+        return HttpResponseForbidden("You don't own this restaurant.")
+    if request.method == 'POST':
+        form = MenuItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'"{item.name}" was updated.')
+            return redirect('restaurant_detail', pk=item.restaurant.pk)
+    else:
+        form = MenuItemForm(instance=item)
+    return render(request, 'restaurants/menu_item_form.html', {'form': form, 'action': 'Edit'})
+
+
+@login_required
+def menu_item_delete(request, pk):
+    item = get_object_or_404(MenuItem, pk=pk)
+    if item.restaurant.owner != request.user:
+        return HttpResponseForbidden("You don't own this restaurant.")
+    restaurant_pk = item.restaurant.pk
+    if request.method == 'POST':
+        item_name = item.name
+        item.delete()
+        messages.success(request, f'"{item_name}" was removed from the menu.')
+        return redirect('restaurant_detail', pk=restaurant_pk)
+    return render(request, 'restaurants/menu_item_confirm_delete.html', {'item': item})
+
+
+@login_required
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.sender = request.user
+            msg.save()
+            messages.success(request, "Thanks for reaching out! We'll get back to you soon.")
+            return redirect('contact')
+    else:
+        form = ContactForm()
+    return render(request, 'restaurants/contact.html', {'form': form})
+
+
+@login_required
+def restaurant_contact(request, restaurant_pk):
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_pk)
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.restaurant = restaurant
+            msg.sender = request.user
+            msg.save()
+            messages.success(request, f"Your message was sent to {restaurant.name}.")
+            return redirect('restaurant_detail', pk=restaurant.pk)
+    else:
+        form = ContactForm()
+    return render(request, 'restaurants/restaurant_contact.html', {'form': form, 'restaurant': restaurant})
+
+
+@login_required
+def restaurant_messages(request, restaurant_pk):
+    restaurant = get_object_or_404(Restaurant, pk=restaurant_pk)
+    if restaurant.owner != request.user:
+        return HttpResponseForbidden("You don't own this restaurant.")
+    inbox = restaurant.messages.all().order_by('-created_at')
+    return render(request, 'restaurants/restaurant_messages.html', {'restaurant': restaurant, 'inbox': inbox})
+
+
+@login_required
+def reply_to_message(request, pk):
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    if not msg.restaurant or msg.restaurant.owner != request.user:
+        return HttpResponseForbidden("You don't own this restaurant.")
+    if request.method == 'POST':
+        msg.response = "Thanks for reaching out — we've seen your message and will follow up with you shortly."
+        msg.is_read = True
+        msg.responded_at = timezone.now()
+        msg.save()
+        messages.success(request, "Reply sent.")
+    return redirect('restaurant_messages', restaurant_pk=msg.restaurant.pk)
+
+
+@login_required
+def my_messages(request):
+    sent = ContactMessage.objects.filter(sender=request.user).order_by('-created_at')
+    return render(request, 'restaurants/my_messages.html', {'sent': sent})

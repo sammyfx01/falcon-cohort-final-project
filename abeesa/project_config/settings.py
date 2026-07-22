@@ -42,8 +42,8 @@ INSTALLED_APPS = [
 
     # Local apps
     'restaurants',
+    'orders',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

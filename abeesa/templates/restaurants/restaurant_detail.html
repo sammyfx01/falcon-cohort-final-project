@@ -2,25 +2,46 @@
 {% block title %}{{ restaurant.name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ restaurant.name }}</h1>
-  <p>{{ restaurant.address }}</p>
-  <p>Open {{ restaurant.opening_time }} – {{ restaurant.closing_time }}</p>
-
-  <h2>Menu</h2>
-
-  {% if menu_items %}
-    <ul>
-      {% for item in menu_items %}
-        <li>
-          <strong>{{ item.name }}</strong> — ${{ item.price }}
-          {% if not item.is_available %}<em>(currently unavailable)</em>{% endif %}
-          <p>{{ item.description }}</p>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No menu items yet.</p>
+  <section class="restaurant-header">
+    <a href="{% url 'restaurant_list' %}" class="back-link">&larr; All restaurants</a>
+    <h1>{{ restaurant.name }}</h1>
+    <p class="restaurant-address">{{ restaurant.address }}</p>
+    <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
+  </section>
+  {% if request.user.is_authenticated and not is_owner %}
+    <a href="{% url 'place_order' restaurant.pk %}" class="btn-add">Order from here</a>
+    <a href="{% url 'restaurant_contact' restaurant.pk %}" class="btn-add">Contact restaurant</a>
   {% endif %}
-
-  <a href="{% url 'restaurant_list' %}">&larr; Back to all restaurants</a>
+  <section class="menu-section">
+    <div class="menu-section-head">
+      <h2>Menu</h2>
+      {% if is_owner %}
+        <a href="{% url 'menu_item_create' restaurant.pk %}" class="btn-add">+ Add menu item</a>
+        <a href="{% url 'restaurant_orders' restaurant.pk %}" class="btn-add">View orders</a>
+        <a href="{% url 'restaurant_messages' restaurant.pk %}" class="btn-add">View messages</a>
+      {% endif %}
+    </div>
+    {% if menu_items %}
+      <div class="menu-grid">
+        {% for item in menu_items %}
+        <div class="menu-card {% if not item.is_available %}menu-card-unavailable{% endif %}">
+          <div class="menu-card-top">
+            <h3>{{ item.name }}</h3>
+            <span class="menu-price">${{ item.price }}</span>
+          </div>
+          {% if item.description %}<p class="menu-desc">{{ item.description }}</p>{% endif %}
+          {% if not item.is_available %}<span class="badge-unavailable">Unavailable</span>{% endif %}
+          {% if is_owner %}
+          <div class="menu-card-actions">
+            <a href="{% url 'menu_item_update' item.pk %}">Edit</a>
+            <a href="{% url 'menu_item_delete' item.pk %}" class="link-danger">Delete</a>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">No menu items yet.</p>
+    {% endif %}
+  </section>
 {% endblock %}

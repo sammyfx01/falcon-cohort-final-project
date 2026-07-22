@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Orders for {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+  <a href="{% url 'restaurant_detail' restaurant.pk %}" class="back-link">&larr; Back to {{ restaurant.name }}</a>
+  <h1>Incoming Orders</h1>
+
+  {% if orders %}
+    <div class="orders-list">
+      {% for order in orders %}
+        <div class="order-card">
+          <div class="order-card-head">
+            <strong>Order #{{ order.id }} — {{ order.customer.username }}</strong>
+            <span class="order-status order-status-{{ order.status }}">{{ order.get_status_display }}</span>
+          </div>
+          <p class="order-date">{{ order.created_at|date:"M d, Y — g:i A" }}</p>
+          <p class="order-delivery">Deliver to: {{ order.delivery_address }} · {{ order.contact_phone }}</p>
+          <ul class="order-items">
+            {% for item in order.items.all %}
+              <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>${{ item.subtotal }}</span></li>
+            {% endfor %}
+          </ul>
+          <p class="order-total">Total: ${{ order.total_price }}</p>
+
+          <form method="post" action="{% url 'update_order_status' order.pk %}" class="status-form">
+            {% csrf_token %}
+            <select name="status">
+              {% for value, label in order.STATUS_CHOICES %}
+                <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-add">Update status</button>
+          </form>
+          {% if order.payment_status == 'paid_pending_confirmation' %}
+            <form method="post" action="{% url 'confirm_payment' order.pk %}" class="cancel-form">
+              {% csrf_token %}
+              <button type="submit" class="btn-add">Confirm Payment Received</button>
+            </form>
+          {% elif order.payment_status == 'confirmed' %}
+            <p class="order-delivery">✓ Payment confirmed</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-message">No orders yet.</p>
+  {% endif %}
+{% endblock %}

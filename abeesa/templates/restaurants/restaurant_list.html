@@ -2,19 +2,46 @@
 {% block title %}Restaurants{% endblock %}
 
 {% block content %}
-  <h1>Restaurants</h1>
+  <section class="hero">
+    <h1>Order from your favorite local spots</h1>
+    <p>Browse restaurant menus, place an order, and track it in real time.</p>
+  </section>
 
-  {% if restaurants %}
-    <ul>
-      {% for restaurant in restaurants %}
-        <li>
-          <strong><a href="{% url 'restaurant_detail' restaurant.pk %}">{{ restaurant.name }}</a></strong> — {{ restaurant.address }}
-          <br>
-          Open: {{ restaurant.opening_time }} – {{ restaurant.closing_time }}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No restaurants yet.</p>
-  {% endif %}
+  <section class="restaurant-section fade-in">
+    <h2>Restaurants near you</h2>
+
+    {% if restaurants %}
+      <div class="restaurant-grid">
+        {% for restaurant in restaurants %}
+          <a href="{% url 'restaurant_detail' restaurant.pk %}" class="restaurant-card">
+            <div class="restaurant-card-body">
+              <h3>{{ restaurant.name }}</h3>
+              <p class="restaurant-address">{{ restaurant.address }}</p>
+              <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">No restaurants have joined yet — check back soon.</p>
+    {% endif %}
+  </section>
+
+  <section class="featured-section fade-in">
+    <h2>Popular right now</h2>
+
+    {% if featured_items %}
+      <div class="featured-grid">
+        {% for item in featured_items %}
+          <a href="{% url 'restaurant_detail' item.restaurant.pk %}" class="featured-card">
+            <h3>{{ item.name }}</h3>
+            <p class="featured-restaurant">from {{ item.restaurant.name }}</p>
+            <p class="featured-price">${{ item.price }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">No menu items yet.</p>
+    {% endif %}
+  </section>
 {% endblock %}

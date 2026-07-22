@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+  <h1>My Orders</h1>
+
+  {% if orders %}
+    <div class="orders-list">
+      {% for order in orders %}
+        <div class="order-card">
+          <div class="order-card-head">
+            <strong>{{ order.restaurant.name }}</strong>
+            <span class="order-status order-status-{{ order.status }}">{{ order.get_status_display }}</span>
+          </div>
+          <p class="order-date">{{ order.created_at|date:"M d, Y — g:i A" }}</p>
+          <p class="order-delivery">Deliver to: {{ order.delivery_address }} · {{ order.contact_phone }}</p>
+          <p class="order-delivery">
+            Payment:
+            {% if order.payment_status == 'unpaid' %}Not paid yet
+            {% elif order.payment_status == 'paid_pending_confirmation' %}Awaiting confirmation
+            {% else %}Confirmed{% endif %}
+          </p>
+
+          {% if order.payment_status == 'unpaid' %}
+            <div class="order-card-actions">
+              <p><strong>Pay to:</strong> {{ order.restaurant.bank_name }} — {{ order.restaurant.account_number }} ({{ order.restaurant.account_name }})</p>
+              <form method="post" action="{% url 'mark_as_paid' order.pk %}" class="cancel-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-add">I've Paid</button>
+              </form>
+            </div>
+          {% endif %}
+
+          <ul class="order-items">
+            {% for item in order.items.all %}
+              <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>${{ item.subtotal }}</span></li>
+            {% endfor %}
+          </ul>
+          <p class="order-total">Total: ${{ order.total_price }}</p>
+
+          {% if order.status == 'pending' or order.status == 'confirmed' %}
+            <form method="post" action="{% url 'cancel_order' order.pk %}" class="cancel-form">
+              {% csrf_token %}
+              <button type="submit" class="link-danger-btn">Cancel order</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-message">You haven't placed any orders yet.</p>
+  {% endif %}
+{% endblock %}

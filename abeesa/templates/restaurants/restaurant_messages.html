@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Messages for {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+  <a href="{% url 'restaurant_detail' restaurant.pk %}" class="back-link">&larr; Back to {{ restaurant.name }}</a>
+  <h1>Messages</h1>
+
+  {% if inbox %}
+    <div class="orders-list">
+      {% for msg in inbox %}
+        <div class="order-card">
+          <div class="order-card-head">
+            <strong>{{ msg.name }}</strong>
+            <span class="order-status {% if msg.is_read %}order-status-completed{% else %}order-status-pending{% endif %}">
+              {% if msg.is_read %}Replied{% else %}Unread{% endif %}
+            </span>
+          </div>
+          <p class="order-date">{{ msg.email }} · {{ msg.created_at|date:"M d, Y — g:i A" }}</p>
+          <p>{{ msg.message }}</p>
+
+          {% if msg.response %}
+            <p class="order-delivery">Your reply: {{ msg.response }}</p>
+          {% else %}
+            <form method="post" action="{% url 'reply_to_message' msg.pk %}" class="cancel-form">
+              {% csrf_token %}
+              <button type="submit" class="btn-add">Send canned reply</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-message">No messages yet.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}My Messages{% endblock %}
+
+{% block content %}
+  <h1>My Messages</h1>
+
+  {% if sent %}
+    <div class="orders-list">
+      {% for msg in sent %}
+        <div class="order-card">
+          <div class="order-card-head">
+            <strong>{% if msg.restaurant %}{{ msg.restaurant.name }}{% else %}General inquiry{% endif %}</strong>
+            <span class="order-status {% if msg.response %}order-status-completed{% else %}order-status-pending{% endif %}">
+              {% if msg.response %}Replied{% else %}Awaiting reply{% endif %}
+            </span>
+          </div>
+          <p class="order-date">{{ msg.created_at|date:"M d, Y — g:i A" }}</p>
+          <p>You said: {{ msg.message }}</p>
+          {% if msg.response %}
+            <p class="order-delivery">Reply: {{ msg.response }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-message">You haven't sent any messages yet.</p>
+  {% endif %}
+{% endblock %}

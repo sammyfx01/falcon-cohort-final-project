@@ -1,0 +1,48 @@
+# Abeesa — Restaurant Ordering Platform
+
+**Live Demo:** _[Add your Render URL here once deployed]_
+
+## Description
+
+Abeesa is a multi-restaurant food ordering platform built with Django. Restaurant
+owners can list their restaurant, manage their menu, and track incoming orders.
+Customers can browse restaurants, place orders with delivery details, confirm
+payment via bank transfer, message restaurants directly, and track their order
+status in real time. Built as the final project for the Dune Cohort Backend
+Development with Python & Django course.
+
+## Features
+
+- User registration, login, and logout (Django auth)
+- Restaurant owners can create, edit, and delete their own menu items (full CRUD, owner-only permissions)
+- Customers can browse all restaurants and view individual restaurant menus
+- Customers can place orders with delivery address and contact phone
+- Session-based cart-free ordering (quantities selected directly on the order form)
+- Order status tracking: Pending → Confirmed → Preparing → Completed (or Cancelled)
+- Customers can cancel their own pending/confirmed orders
+- Restaurant owners can view all incoming orders and update order status (owner-only, restricted action)
+- Manual bank-transfer payment flow: customer marks "I've Paid," owner confirms receipt
+- Restaurant-specific contact messaging with canned-reply system
+- General site-wide contact form
+- Fully responsive design (mobile, tablet, desktop) with a hamburger nav on small screens
+- Scroll-triggered fade-in animations
+- REST API (Django REST Framework) for menu items and orders, with authentication-protected write operations
+- Custom-designed UI with Google Fonts (Poppins/Inter), custom CSS, hero image, and brand logo
+
+## Tech Stack
+
+- Python 3.14
+- Django 6.0
+- Django REST Framework
+- SQLite (development) / PostgreSQL (production)
+- HTML5, CSS3 (custom, no framework), vanilla JavaScript
+- WhiteNoise (static file serving in production)
+- Render (deployment)
+
+## API Documentation
+
+See [`api_docs.md`](./api_docs.md) for full endpoint documentation.
+
+## Setup Instructions
+
+1. Clone the repository:

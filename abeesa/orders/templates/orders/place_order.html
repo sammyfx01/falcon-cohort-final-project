@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Order from {{ restaurant.name }}{% endblock %}
+
+{% block content %}
+  <a href="{% url 'restaurant_detail' restaurant.pk %}" class="back-link">&larr; Back to {{ restaurant.name }}</a>
+  <h1>Order from {{ restaurant.name }}</h1>
+
+  {% if menu_items %}
+   <form method="post" class="order-form">
+      {% csrf_token %}
+
+      <div class="field-group">
+        <label for="delivery_address">Delivery address</label>
+        <input type="text" name="delivery_address" id="delivery_address" placeholder="e.g. 12 Iyalaje Street, Gbagada, Lagos" required>
+      </div>
+
+      <div class="field-group">
+        <label for="contact_phone">Contact phone</label>
+        <input type="tel" name="contact_phone" id="contact_phone" placeholder="e.g. 08012345678" required>
+      </div>
+
+      {% for item in menu_items %}
+        <div class="order-line">
+          <div class="order-line-info">
+            <span class="order-line-name">{{ item.name }}</span>
+            <span class="order-line-price">${{ item.price }}</span>
+          </div>
+          <input type="number" name="quantity_{{ item.id }}" min="0" value="0" class="order-line-qty">
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn-full">Place order</button>
+    </form>
+  {% else %}
+    <p class="empty-message">This restaurant has no available items right now.</p>
+  {% endif %}
+{% endblock %}

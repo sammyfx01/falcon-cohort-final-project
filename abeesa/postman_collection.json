@@ -1,0 +1,119 @@
+{
+  "info": {
+    "name": "Abeesa API",
+    "description": "REST API endpoints for the Abeesa restaurant ordering platform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "List Menu Items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", ""]
+        }
+      }
+    },
+    {
+      "name": "Get Menu Item Detail",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/1/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", "1", ""]
+        }
+      }
+    },
+    {
+      "name": "Get Menu Item - Not Found (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/9999/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", "9999", ""]
+        }
+      }
+    },
+    {
+      "name": "Create Menu Item - Unauthenticated (403)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"restaurant\": 1,\n  \"name\": \"Test Item\",\n  \"description\": \"Testing\",\n  \"price\": \"1000.00\",\n  \"is_available\": true\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", ""]
+        }
+      }
+    },
+    {
+      "name": "Create Menu Item - Authenticated (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "abeesa", "type": "string" },
+            { "key": "password", "value": "iretiayo123", "type": "string" }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"restaurant\": 1,\n  \"name\": \"Test Item\",\n  \"description\": \"Testing\",\n  \"price\": \"1000.00\",\n  \"is_available\": true\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", ""]
+        }
+      }
+    },
+    {
+      "name": "Delete Menu Item - Authenticated (204)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "abeesa", "type": "string" },
+            { "key": "password", "value": "iretiayo123", "type": "string" }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/menu-items/34/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "menu-items", "34", ""]
+        }
+      }
+    }
+  ]
+}
