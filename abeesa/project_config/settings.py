@@ -68,12 +68,11 @@ WSGI_APPLICATION = 'project_config.wsgi.application'
 
 
 # Database
+DATABASE_URL = config('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-    )
+    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
+
 
 
 # Password validation
