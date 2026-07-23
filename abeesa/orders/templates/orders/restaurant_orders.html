@@ -17,10 +17,10 @@
           <p class="order-delivery">Deliver to: {{ order.delivery_address }} · {{ order.contact_phone }}</p>
           <ul class="order-items">
             {% for item in order.items.all %}
-              <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>${{ item.subtotal }}</span></li>
+              <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>₦{{ item.subtotal }}</span></li>
             {% endfor %}
           </ul>
-          <p class="order-total">Total: ${{ order.total_price }}</p>
+          <p class="order-total">Total: ₦{{ order.total_price }}</p>
 
           <form method="post" action="{% url 'update_order_status' order.pk %}" class="status-form">
             {% csrf_token %}

@@ -36,7 +36,7 @@
           <a href="{% url 'restaurant_detail' item.restaurant.pk %}" class="featured-card">
             <h3>{{ item.name }}</h3>
             <p class="featured-restaurant">from {{ item.restaurant.name }}</p>
-            <p class="featured-price">${{ item.price }}</p>
+            <p class="featured-price">₦{{ item.price }}</p>
           </a>
         {% endfor %}
       </div>

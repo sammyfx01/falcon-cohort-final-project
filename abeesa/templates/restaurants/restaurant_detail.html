@@ -25,9 +25,12 @@
       <div class="menu-grid">
         {% for item in menu_items %}
         <div class="menu-card {% if not item.is_available %}menu-card-unavailable{% endif %}">
+          {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-card-image">
+          {% endif %}
           <div class="menu-card-top">
             <h3>{{ item.name }}</h3>
-            <span class="menu-price">${{ item.price }}</span>
+          <span class="menu-price">₦{{ item.price }}</span>
           </div>
           {% if item.description %}<p class="menu-desc">{{ item.description }}</p>{% endif %}
           {% if not item.is_available %}<span class="badge-unavailable">Unavailable</span>{% endif %}
