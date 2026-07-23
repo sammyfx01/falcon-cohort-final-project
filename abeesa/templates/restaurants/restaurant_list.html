@@ -5,43 +5,75 @@
   <section class="hero">
     <h1>Order from your favorite local spots</h1>
     <p>Browse restaurant menus, place an order, and track it in real time.</p>
+
+    <form method="get" class="search-form">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search for a dish... e.g. Jollof Rice">
+      <button type="submit">Search</button>
+    </form>
   </section>
 
-  <section class="restaurant-section fade-in">
-    <h2>Restaurants near you</h2>
+  {% if query %}
+    <section class="restaurant-section fade-in">
+      <h2>Results for "{{ query }}"</h2>
 
-    {% if restaurants %}
-      <div class="restaurant-grid">
-        {% for restaurant in restaurants %}
-          <a href="{% url 'restaurant_detail' restaurant.pk %}" class="restaurant-card">
-            <div class="restaurant-card-body">
-              <h3>{{ restaurant.name }}</h3>
-              <p class="restaurant-address">{{ restaurant.address }}</p>
-              <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
-            </div>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="empty-message">No restaurants have joined yet — check back soon.</p>
-    {% endif %}
-  </section>
+      {% if search_results %}
+        <div class="menu-grid">
+          {% for item in search_results %}
+            <a href="{% url 'menu_item_detail' item.pk %}" class="menu-card">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-card-image">
+              {% endif %}
+              <div class="menu-card-top">
+                <h3>{{ item.name }}</h3>
+                <span class="menu-price">₦{{ item.price }}</span>
+              </div>
+              <p class="menu-desc">from {{ item.restaurant.name }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-message">No dishes found matching "{{ query }}".</p>
+      {% endif %}
 
-  <section class="featured-section fade-in">
-    <h2>Popular right now</h2>
+      <p style="margin-top:20px;"><a href="{% url 'restaurant_list' %}">&larr; Clear search</a></p>
+    </section>
+  {% else %}
+    <section class="restaurant-section fade-in">
+      <h2>Restaurants near you</h2>
 
-    {% if featured_items %}
-      <div class="featured-grid">
-        {% for item in featured_items %}
-          <a href="{% url 'restaurant_detail' item.restaurant.pk %}" class="featured-card">
-            <h3>{{ item.name }}</h3>
-            <p class="featured-restaurant">from {{ item.restaurant.name }}</p>
-            <p class="featured-price">₦{{ item.price }}</p>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="empty-message">No menu items yet.</p>
-    {% endif %}
-  </section>
+      {% if restaurants %}
+        <div class="restaurant-grid">
+          {% for restaurant in restaurants %}
+            <a href="{% url 'restaurant_detail' restaurant.pk %}" class="restaurant-card">
+              <div class="restaurant-card-body">
+                <h3>{{ restaurant.name }}</h3>
+                <p class="restaurant-address">{{ restaurant.address }}</p>
+                <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-message">No restaurants have joined yet — check back soon.</p>
+      {% endif %}
+    </section>
+
+    <section class="featured-section fade-in">
+      <h2>Popular right now</h2>
+
+      {% if featured_items %}
+        <div class="featured-grid">
+          {% for item in featured_items %}
+            <a href="{% url 'restaurant_detail' item.restaurant.pk %}" class="featured-card">
+              <h3>{{ item.name }}</h3>
+              <p class="featured-restaurant">from {{ item.restaurant.name }}</p>
+              <p class="featured-price">₦{{ item.price }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-message">No menu items yet.</p>
+      {% endif %}
+    </section>
+  {% endif %}
 {% endblock %}

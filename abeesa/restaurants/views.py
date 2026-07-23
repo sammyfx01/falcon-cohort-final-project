@@ -9,11 +9,20 @@ from .forms import MenuItemForm, ContactForm
 
 
 def restaurant_list(request):
+    query = request.GET.get('q', '').strip()
     restaurants = Restaurant.objects.all()
-    featured_items = MenuItem.objects.filter(is_available=True).order_by('-id')[:6]
+    search_results = None
+
+    if query:
+        search_results = MenuItem.objects.filter(name__icontains=query, is_available=True)
+    else:
+        featured_items = MenuItem.objects.filter(is_available=True).order_by('-id')[:6]
+
     return render(request, 'restaurants/restaurant_list.html', {
         'restaurants': restaurants,
-        'featured_items': featured_items,
+        'featured_items': featured_items if not query else None,
+        'search_results': search_results,
+        'query': query,
     })
 
 def menu_item_detail(request, pk):
