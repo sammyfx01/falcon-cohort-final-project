@@ -921,3 +921,41 @@ form button:hover {
   border-radius: 6px;
   margin-bottom: 12px;
 }
+
+.menu-detail-card {
+  background: #fff;
+  border: 1px solid #e0ddd6;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 600px;
+}
+
+.menu-detail-image {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.menu-detail-body {
+  padding: 24px 28px;
+}
+
+.menu-detail-restaurant {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.menu-detail-price {
+  color: #b8894f;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.menu-detail-desc {
+  color: #555;
+  line-height: 1.6;
+  margin: 16px 0;
+}

@@ -14,6 +14,7 @@ urlpatterns = [
     path('restaurants/<int:restaurant_pk>/messages/', views.restaurant_messages, name='restaurant_messages'),
     path('messages/<int:pk>/reply/', views.reply_to_message, name='reply_to_message'),
     path('my-messages/', views.my_messages, name='my_messages'),
+    path('menu-items/<int:pk>/', views.menu_item_detail, name='menu_item_detail'),
 
     # REST API
     path('api/menu-items/', MenuItemListCreateAPIView.as_view(), name='api_menu_item_list'),

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }}{% endblock %}
+
+{% block content %}
+  <a href="{% url 'restaurant_detail' item.restaurant.pk %}" class="back-link">&larr; Back to {{ item.restaurant.name }}</a>
+
+  <div class="menu-detail-card">
+    {% if item.image %}
+      <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-detail-image">
+    {% endif %}
+
+    <div class="menu-detail-body">
+      <h1>{{ item.name }}</h1>
+      <p class="menu-detail-restaurant">from {{ item.restaurant.name }}</p>
+      <p class="menu-detail-price">₦{{ item.price }}</p>
+
+      {% if not item.is_available %}
+        <span class="badge-unavailable">Currently unavailable</span>
+      {% endif %}
+
+      {% if item.description %}
+        <p class="menu-detail-desc">{{ item.description }}</p>
+      {% endif %}
+
+      {% if request.user.is_authenticated and not is_owner and item.is_available %}
+        <a href="{% url 'place_order' item.restaurant.pk %}" class="btn-add">Order from here</a>
+      {% endif %}
+
+      {% if is_owner %}
+        <div class="menu-card-actions">
+          <a href="{% url 'menu_item_update' item.pk %}">Edit</a>
+          <a href="{% url 'menu_item_delete' item.pk %}" class="link-danger">Delete</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

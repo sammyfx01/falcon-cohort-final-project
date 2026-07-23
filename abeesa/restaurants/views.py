@@ -16,6 +16,13 @@ def restaurant_list(request):
         'featured_items': featured_items,
     })
 
+def menu_item_detail(request, pk):
+    item = get_object_or_404(MenuItem, pk=pk)
+    is_owner = request.user.is_authenticated and item.restaurant.owner == request.user
+    return render(request, 'restaurants/menu_item_detail.html', {
+        'item': item,
+        'is_owner': is_owner,
+    })
 
 def restaurant_detail(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
