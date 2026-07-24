@@ -14,7 +14,7 @@
 
   <nav>
     <a href="{% url 'restaurant_list' %}" class="brand-link">
-      <img src="{% static 'images/logo.svg' %}" alt="Abeesa" class="brand-logo">
+      <img src="{% static 'images/logo.png' %}" alt="Abeesa" class="brand-logo">
     </a>
 
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
@@ -34,13 +34,6 @@
       {% endif %}
     </div>
   </nav>
-
-  <div class="search-bar-section">
-    <form method="get" action="{% url 'restaurant_list' %}" class="page-search">
-      <input type="text" name="q" placeholder="Search for a dish...">
-      <button type="submit">Search</button>
-    </form>
-  </div>
 
   <main>
     {% if messages %}
