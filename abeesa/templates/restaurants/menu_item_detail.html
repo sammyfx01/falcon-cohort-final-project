@@ -14,6 +14,15 @@
       <p class="menu-detail-restaurant">from {{ item.restaurant.name }}</p>
       <p class="menu-detail-price">₦{{ item.price }}</p>
 
+      <div class="review-summary">
+        {% if item.average_rating %}
+          <span class="stars">{% for i in "12345" %}{% if forloop.counter <= item.average_rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+          <span class="review-count">{{ item.average_rating }} ({{ item.review_count }} review{{ item.review_count|pluralize }})</span>
+        {% else %}
+          <span class="review-count">No reviews yet</span>
+        {% endif %}
+      </div>
+
       {% if not item.is_available %}
         <span class="badge-unavailable">Currently unavailable</span>
       {% endif %}
@@ -34,4 +43,31 @@
       {% endif %}
     </div>
   </div>
+
+  {% if request.user.is_authenticated and not is_owner %}
+    <div class="review-form-card">
+      <h3>{% if existing_review %}Update your review{% else %}Leave a review{% endif %}</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-add">{% if existing_review %}Update review{% else %}Submit review{% endif %}</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if reviews %}
+    <div class="review-list">
+      <h3>Reviews</h3>
+      {% for review in reviews %}
+        <div class="review-item">
+          <div class="review-item-head">
+            <strong>{{ review.customer.username }}</strong>
+            <span class="review-item-date">{{ review.created_at|date:"M d, Y" }}</span>
+          </div>
+          <span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+          {% if review.comment %}<p>{{ review.comment }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock %}

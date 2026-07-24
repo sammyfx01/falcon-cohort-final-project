@@ -2,15 +2,14 @@
 {% block title %}Restaurants{% endblock %}
 
 {% block content %}
-  <section class="hero">
-    <h1>Order from your favorite local spots</h1>
-    <p>Browse restaurant menus, place an order, and track it in real time.</p>
+  <section class="hero"></section>
 
-    <form method="get" class="search-form">
-      <input type="text" name="q" value="{{ query }}" placeholder="Search for a dish... e.g. Jollof Rice">
-      <button type="submit">Search</button>
-    </form>
-  </section>
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      <span>Order from your favorite local spots — Browse restaurant menus, place an order, and track it in real time.</span>
+      <span>Order from your favorite local spots — Browse restaurant menus, place an order, and track it in real time.</span>
+    </div>
+  </div>
 
   {% if query %}
     <section class="restaurant-section fade-in">

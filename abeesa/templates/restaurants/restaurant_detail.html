@@ -5,6 +5,16 @@
   <section class="restaurant-header">
     <a href="{% url 'restaurant_list' %}" class="back-link">&larr; All restaurants</a>
     <h1>{{ restaurant.name }}</h1>
+
+    <div class="review-summary">
+      {% if restaurant.average_rating %}
+        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= restaurant.average_rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+        <span class="review-count">{{ restaurant.average_rating }} ({{ restaurant.review_count }} review{{ restaurant.review_count|pluralize }})</span>
+      {% else %}
+        <span class="review-count">No reviews yet</span>
+      {% endif %}
+    </div>
+
     <p class="restaurant-address">{{ restaurant.address }}</p>
     <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
   </section>
@@ -32,6 +42,14 @@
             <div class="menu-card-top">
               <h3>{{ item.name }}</h3>
               <span class="menu-price">₦{{ item.price }}</span>
+            </div>
+            <div class="review-summary">
+              {% if item.average_rating %}
+                <span class="stars">{% for i in "12345" %}{% if forloop.counter <= item.average_rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                <span class="review-count">{{ item.average_rating }} ({{ item.review_count }})</span>
+              {% else %}
+                <span class="review-count">No reviews yet</span>
+              {% endif %}
             </div>
           </a>
           {% if item.description %}<p class="menu-desc">{{ item.description }}</p>{% endif %}

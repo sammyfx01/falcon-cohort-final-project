@@ -15,6 +15,14 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+    def average_rating(self):
+        from django.db.models import Avg
+        result = Review.objects.filter(menu_item__restaurant=self).aggregate(avg=Avg('rating'))
+        return round(result['avg'], 1) if result['avg'] else None
+
+    def review_count(self):
+        return Review.objects.filter(menu_item__restaurant=self).count()
+
 
 class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='menu_items')
@@ -26,6 +34,15 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.restaurant.name}"
+
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if not reviews:
+            return None
+        return round(sum(r.rating for r in reviews) / len(reviews), 1)
+
+    def review_count(self):
+        return self.reviews.count()
 
 
 class ContactMessage(models.Model):
@@ -41,3 +58,17 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.created_at.strftime('%b %d, %Y')}"
+
+
+class Review(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name='reviews')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('menu_item', 'customer')
+
+    def __str__(self):
+        return f"{self.customer.username} rated {self.menu_item.name} — {self.rating}/5"

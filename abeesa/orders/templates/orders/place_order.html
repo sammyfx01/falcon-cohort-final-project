@@ -6,7 +6,11 @@
   <h1>Order from {{ restaurant.name }}</h1>
 
   {% if menu_items %}
-   <form method="post" class="order-form">
+    <div class="field-group" style="border-bottom:none;">
+      <input type="text" id="menuSearch" placeholder="Search this menu..." class="menu-search-input">
+    </div>
+
+    <form method="post" class="order-form" id="orderForm">
       {% csrf_token %}
 
       <div class="field-group">
@@ -20,17 +24,58 @@
       </div>
 
       {% for item in menu_items %}
-        <div class="order-line">
+        <div class="order-line" data-item-name="{{ item.name|lower }}">
           <div class="order-line-info">
             <span class="order-line-name">{{ item.name }}</span>
             <span class="order-line-price">₦{{ item.price }}</span>
           </div>
-          <input type="number" name="quantity_{{ item.id }}" min="0" value="0" class="order-line-qty">
+          <input type="number" name="quantity_{{ item.id }}" min="0" value="0" class="order-line-qty" data-price="{{ item.price }}">
         </div>
       {% endfor %}
+
+      <div class="order-running-total">
+        <span>Total:</span>
+        <span id="runningTotal">₦0.00</span>
+      </div>
+
       <button type="submit" class="btn-full">Place order</button>
     </form>
   {% else %}
     <p class="empty-message">This restaurant has no available items right now.</p>
   {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('menuSearch');
+  const lines = document.querySelectorAll('.order-line');
+  const qtyInputs = document.querySelectorAll('.order-line-qty');
+  const totalDisplay = document.getElementById('runningTotal');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      const term = this.value.toLowerCase().trim();
+      lines.forEach(function (line) {
+        const name = line.dataset.itemName;
+        line.style.display = name.includes(term) ? 'flex' : 'none';
+      });
+    });
+  }
+
+  function updateTotal() {
+    let total = 0;
+    qtyInputs.forEach(function (input) {
+      const price = parseFloat(input.dataset.price) || 0;
+      const qty = parseInt(input.value) || 0;
+      total += price * qty;
+    });
+    totalDisplay.textContent = '₦' + total.toFixed(2);
+  }
+
+  qtyInputs.forEach(function (input) {
+    input.addEventListener('input', updateTotal);
+  });
+});
+</script>
 {% endblock %}

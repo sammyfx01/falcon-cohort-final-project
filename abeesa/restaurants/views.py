@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.utils import timezone
-from .models import Restaurant, MenuItem, ContactMessage
-from .forms import MenuItemForm, ContactForm
+from .models import Restaurant, MenuItem, ContactMessage, Review
+from .forms import MenuItemForm, ContactForm, ReviewForm
 
 
 def restaurant_list(request):
@@ -25,14 +25,35 @@ def restaurant_list(request):
         'query': query,
     })
 
+
 def menu_item_detail(request, pk):
     item = get_object_or_404(MenuItem, pk=pk)
     is_owner = request.user.is_authenticated and item.restaurant.owner == request.user
+    reviews = item.reviews.all().order_by('-created_at')
+
+    existing_review = None
+    if request.user.is_authenticated:
+        existing_review = Review.objects.filter(menu_item=item, customer=request.user).first()
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = ReviewForm(request.POST, instance=existing_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.menu_item = item
+            review.customer = request.user
+            review.save()
+            messages.success(request, "Thanks for your review!")
+            return redirect('menu_item_detail', pk=item.pk)
+    else:
+        form = ReviewForm(instance=existing_review)
+
     return render(request, 'restaurants/menu_item_detail.html', {
         'item': item,
         'is_owner': is_owner,
+        'reviews': reviews,
+        'form': form,
+        'existing_review': existing_review,
     })
-
 def restaurant_detail(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     menu_items = restaurant.menu_items.all()
