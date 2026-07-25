@@ -33,10 +33,10 @@
 
           <ul class="order-items">
             {% for item in order.items.all %}
-              <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>${{ item.subtotal }}</span></li>
+           <li>{{ item.quantity }} × {{ item.menu_item.name }} <span>₦{{ item.subtotal }}</span></li>
             {% endfor %}
           </ul>
-          <p class="order-total">Total: ${{ order.total_price }}</p>
+          <p class="order-total">Total: ₦{{ order.total_price }}</p>
 
           {% if order.status == 'pending' or order.status == 'confirmed' %}
             <form method="post" action="{% url 'cancel_order' order.pk %}" class="cancel-form">
