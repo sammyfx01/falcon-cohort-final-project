@@ -28,7 +28,7 @@ def place_order(request, restaurant_pk):
             order = Order.objects.create(customer=request.user, restaurant=restaurant, delivery_address=delivery_address, contact_phone=contact_phone)
             for item, quantity in order_items_to_create:
                 OrderItem.objects.create(order=order, menu_item=item, quantity=quantity, price_at_order_time=item.price)
-           messages.info(request, "DEBUG: customer email is [" + str(request.user.email) + "]")
+            messages.info(request, "DEBUG: customer email is [" + str(request.user.email) + "]")
             if request.user.email:
                 send_mail(
                     subject="Order confirmation - " + restaurant.name,
