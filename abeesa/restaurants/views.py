@@ -56,12 +56,17 @@ def menu_item_detail(request, pk):
     })
 def restaurant_detail(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
-    menu_items = restaurant.menu_items.all()
+    query = request.GET.get('q', '').strip()
+    if query:
+        menu_items = restaurant.menu_items.filter(name__icontains=query)
+    else:
+        menu_items = restaurant.menu_items.all()
     is_owner = request.user.is_authenticated and restaurant.owner == request.user
     return render(request, 'restaurants/restaurant_detail.html', {
         'restaurant': restaurant,
         'menu_items': menu_items,
         'is_owner': is_owner,
+        'query': query,
     })
 
 

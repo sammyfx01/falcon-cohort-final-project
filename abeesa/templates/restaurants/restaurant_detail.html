@@ -18,6 +18,14 @@
     <p class="restaurant-address">{{ restaurant.address }}</p>
     <p class="restaurant-hours">Open {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}</p>
   </section>
+
+  <div class="restaurant-search-form">
+    <form method="get" action="{% url 'restaurant_detail' restaurant.pk %}" class="restaurant-search">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search this restaurant's menu...">
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
   {% if request.user.is_authenticated and not is_owner %}
     <a href="{% url 'place_order' restaurant.pk %}" class="btn-add">Order from here</a>
     <a href="{% url 'restaurant_contact' restaurant.pk %}" class="btn-add">Contact restaurant</a>

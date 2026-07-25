@@ -908,8 +908,10 @@ form button:hover {
   gap: 10px;
 }
 .brand-logo {
-  height: 72px;
+  height: 88px;
   width: auto;
+  background-color: transparent;
+  display: block;
 }
 
 .menu-card-image {
