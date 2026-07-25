@@ -44,7 +44,7 @@ def place_order(request, restaurant_pk):
                     message="Hi " + restaurant.owner.username + ",\n\nYou have a new order from " + request.user.username + " at " + restaurant.name + ".\n\nDelivery address: " + delivery_address + "\nPhone: " + contact_phone + "\nTotal: NGN " + str(order.total_price()) + "\n\nLog in to view and manage this order.\n\n— Abeesa",
                     from_email=None,
                     recipient_list=[restaurant.owner.email],
-                    fail_silently=False,
+                    fail_silently=True,
                 )
 
             messages.success(request, "Order placed at " + restaurant.name + "!")
